@@ -43,7 +43,8 @@ class Server {
 ```
 
 ### Client.java
-```javaimport java.io.*;
+```java
+import java.io.*;
 import java.net.*;
 
 class Client {
