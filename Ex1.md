@@ -1,7 +1,8 @@
 ## Exercice 1 [TCP Client Server-Connection]
 
 ### Server.java
-```javaimport java.io.*;
+```java
+import java.io.*;
 import java.net.*;
 
 class Server {
@@ -41,7 +42,8 @@ class Server {
 ```
 
 ### Client.java
-```javaimport java.io.*;
+```java
+import java.io.*;
 import java.net.*;
 
 class Client {
