@@ -1,105 +1,38 @@
 ## Exercice 1 [TCP Client Server-Connection]
 
 ### Server.java
-```java
-import java.io.*;
+```javaimport java.io.*;
 import java.net.*;
 
 class Server {
-    private ServerSocket server;
-    protected Socket socket;
-    protected DataInputStream in;
-
-    public Server(int port) throws Exception {
-        try {
-            server = new ServerSocket(port);
-            socket = server.accept();
-            in = new DataInputStream(socket.getInputStream());
-            System.out.println("Server is Running");
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-    }
-
-    public String Receive() throws Exception {
-        try {
-            String msg = in.readUTF();
-            return msg;
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-    }
-
-    public void Close() throws Exception {
-        try {
-            in.close();
-            socket.close();
-            server.close();
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-    }
-}
-```
-
-### Client.java
-```java
-import java.io.*;
-import java.net.*;
-
-class Client {
-    protected Socket socket;
-    protected DataOutputStream out;
-
-    public Client(String domain, int port) throws Exception {
-        try {
-            socket = new Socket(domain, port);
-            out = new DataOutputStream(socket.getOutputStream());
-            System.out.println("Client is Connecting on " + domain);
-        } catch (ConnectException e) {
-            throw new Exception("Couldn't Connect to the Server");
-        }
-    }
-
-    public void Send(String msg) throws Exception {
-        try {
-            out.writeUTF(msg);
-            out.flush();
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-    }
-
-    public void Close() throws Exception {
-        try {
-            socket.close();
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-    }
-}
-```
-
-## Testing Stuffs
-
-### ServerTest.java
-```java
-import java.io.*;
-
-public class ServerTest {
     public static void print(Object o) {
         System.out.println(o.toString());
     }
 
     public static void main(String[] args) throws Exception {
         try {
-            Server server = new Server(6666);
+            /*
+             * Create a ServerSocket, a Socket that listens to the Server, an Input Stream,
+             * then Log when Ready
+             */
+            ServerSocket server = new ServerSocket(6666);
+            Socket socket = server.accept();
+            DataInputStream in = new DataInputStream(socket.getInputStream());
+            print("Server is Running");
+
             String message = "";
+            // If the Client sends "bye" exit
             while (!message.equals("bye")) {
-                message = server.Receive();
+                // Recieve a Message
+                message = in.readUTF();
                 print("[CLIENT]: " + message);
             }
-            server.Close();
+
+            // Close Connection
+            print("Server is Shutting down");
+            in.close();
+            socket.close();
+            server.close();
         } catch (Exception e) {
             print(e);
         }
@@ -107,11 +40,11 @@ public class ServerTest {
 }
 ```
 
-### ClientTest.java
-```java
-import java.io.*;
+### Client.java
+```javaimport java.io.*;
+import java.net.*;
 
-class ClientTest {
+class Client {
     public static void print(Object o) {
         System.out.println(o.toString());
     }
@@ -119,16 +52,25 @@ class ClientTest {
     public static void main(String[] args) {
 
         try {
-            Client client = new Client("localhost", 6666);
+            // Create the Socket, Output Stream and Log when Connected
+            Socket socket = new Socket("localhost", 6666);
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            print("A Client has Connecting");
 
+            // Just a Buffer to get Text, you can use Scanner
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            String message = "";
 
+            String message = "";
+            // If the Client sends "bye" exit
             while (!message.equals("bye")) {
                 message = br.readLine();
-                client.Send(message);
+                // Send a Message
+                out.writeUTF(message);
+                out.flush();
             }
-            client.Close();
+
+            // Close Connection
+            socket.close();
         } catch (Exception e) {
             print(e);
         }
